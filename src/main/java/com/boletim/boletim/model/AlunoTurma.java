@@ -31,4 +31,9 @@ public class AlunoTurma {
     @Fetch(FetchMode.SELECT)
     @JoinColumn(name = "turma_id", referencedColumnName = "id")
     private Turma turma;
+
+    public AlunoTurma(Aluno aluno, Turma turma) {
+        this.aluno = aluno;
+        this.turma = turma;
+    }
 }

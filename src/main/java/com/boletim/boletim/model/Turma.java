@@ -25,12 +25,15 @@ public class Turma {
     @Column(name = "nome")
     private String nome;
 
-//    @OneToMany(mappedBy = "aluno", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    private List<AlunoTurma> alunosTurma;
-
     @OneToMany(mappedBy = "aluno", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AlunoTurma> alunosTurma;
 
     @OneToOne(mappedBy = "turma", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Professor professor;
+
+    public Turma(String nome, List<AlunoTurma> alunosTurma, Professor professor) {
+        this.nome = nome;
+        this.alunosTurma = alunosTurma;
+        this.professor = professor;
+    }
 }

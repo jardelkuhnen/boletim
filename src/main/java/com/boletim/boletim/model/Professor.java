@@ -1,6 +1,9 @@
 package com.boletim.boletim.model;
 
+import com.boletim.boletim.dto.TurmaDTO;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -8,6 +11,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "professor")
 public class Professor {
 
@@ -23,4 +28,10 @@ public class Professor {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Turma turma;
+
+    public Professor(String nome, String sobreNome, TurmaDTO turmaDTO) {
+        this.nome = nome;
+        this.sobreNome = sobreNome;
+        this.turma = TurmaDTO.toTurma(turmaDTO);
+    }
 }

@@ -1,13 +1,17 @@
 package com.boletim.boletim.controller;
 
 import com.boletim.boletim.dto.AlunoDTO;
+import com.boletim.boletim.exception.NotFoundException;
 import com.boletim.boletim.service.AlunoService;
-import javassist.NotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/aluno")
+import javax.validation.Valid;
+
+@RestController
+@RequestMapping("/aluno")
 public class AlunoController {
 
     private final AlunoService alunoService;
@@ -19,7 +23,7 @@ public class AlunoController {
 
 
     @PostMapping
-    public ResponseEntity save(@RequestBody AlunoDTO alunoDTO) {
+    public ResponseEntity save(@Valid @RequestBody AlunoDTO alunoDTO) throws NotFoundException {
         alunoDTO = this.alunoService.save(alunoDTO);
 
         return ResponseEntity.ok(alunoDTO);
