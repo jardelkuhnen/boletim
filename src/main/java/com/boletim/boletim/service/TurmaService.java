@@ -43,16 +43,19 @@ public class TurmaService {
     @Transactional
     public TurmaDTO save(TurmaDTO turmaDTO) throws NotFoundException {
 
-        Professor professor = this.professorService.findById(turmaDTO.getId());
-        List<AlunoTurma> alunosTurma = createAlunosTurma(turmaDTO.getAlunos());
+//        Professor professor = this.professorService.findById(turmaDTO.getId());
+//        List<AlunoTurma> alunosTurma = createAlunosTurma(turmaDTO.getAlunos());
 
-        Turma turma = new Turma(turmaDTO.getNome(), alunosTurma, professor);
+        Turma turma = new Turma(turmaDTO.getNome());
 
         this.turmaRepository.save(turma);
-        this.alunoTurmaRepository.saveAll(alunosTurma);
+//        this.alunoTurmaRepository.saveAll(alunosTurma);
 
         return turmaDTO;
     }
+
+
+
 
     private List<AlunoTurma> createAlunosTurma(List<AlunoDTO> alunos) {
         List<AlunoTurma> alunosTurma = new ArrayList<>();
@@ -60,5 +63,39 @@ public class TurmaService {
             alunosTurma.add(new AlunoTurma(AlunoDTO.toAluno(alunoDTO), TurmaDTO.toTurma(alunoDTO.getTurma())));
         }
         return  alunosTurma;
+    }
+
+    public List<TurmaDTO> findAll() {
+        List<Turma> turmas = this.turmaRepository.findAll();
+        List<TurmaDTO> turmaDTOS = new ArrayList<>();
+
+        for (Turma turma: turmas) {
+            turmaDTOS.add(TurmaDTO.toTurmaDTO(turma));
+        }
+
+        return turmaDTOS;
+    }
+
+    public void delete(Long turmaId) throws NotFoundException {
+        Optional<Turma> turmaOptional = this.turmaRepository.findById(turmaId);
+
+        if(!turmaOptional.isPresent()) {
+            throw new NotFoundException("Turma não encontrada!");
+        }
+
+        this.turmaRepository.delete(turmaOptional.get());
+
+    }
+
+    public TurmaDTO update(TurmaDTO turmaDTO) throws NotFoundException {
+        Optional<Turma> turmaOptional = this.turmaRepository.findById(turmaDTO.getId());
+
+        if(!turmaOptional.isPresent()) {
+            throw new NotFoundException("Turma não encontrada!");
+        }
+
+        Turma turma = turmaOptional.get();
+        turma.setNome(turmaDTO.getNome());
+        return TurmaDTO.toTurmaDTO(this.turmaRepository.save(turma));
     }
 }

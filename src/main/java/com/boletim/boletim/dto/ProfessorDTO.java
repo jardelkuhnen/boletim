@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -23,19 +25,26 @@ public class ProfessorDTO {
     @NotEmpty(message = "Nome não pode ser vazio!")
     private String nome;
     private String sobreNome;
-    private TurmaDTO turma = new TurmaDTO();
 
     public static Professor toProfessor(ProfessorDTO professorDTO) {
         Professor professor = new Professor();
         professor.setId(professorDTO.getId());
         professor.setNome(professorDTO.getNome());
         professor.setSobreNome(professorDTO.getSobreNome());
-        professor.setTurma(TurmaDTO.toTurma(professorDTO.getTurma()));
 
         return professor;
     }
 
     public static ProfessorDTO toProfessorDTO(Professor professor) {
-        return ProfessorDTO.builder().id(professor.getId()).nome(professor.getNome()).sobreNome(professor.getSobreNome()).turma(TurmaDTO.toTurmaDTO(professor.getTurma())).build();
+        return ProfessorDTO.builder().id(professor.getId()).nome(professor.getNome()).sobreNome(professor.getSobreNome()).build();
+    }
+
+    public static List<ProfessorDTO> of(List<Professor> professores) {
+        List<ProfessorDTO> professorDTOS = new ArrayList<>();
+        for (Professor professor: professores) {
+            professorDTOS.add(ProfessorDTO.toProfessorDTO(professor));
+        }
+
+        return professorDTOS;
     }
 }

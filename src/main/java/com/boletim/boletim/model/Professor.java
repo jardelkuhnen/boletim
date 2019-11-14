@@ -26,12 +26,12 @@ public class Professor {
     @Column(name = "sobre_nome")
     private String sobreNome;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private Turma turma;
 
-    public Professor(String nome, String sobreNome, TurmaDTO turmaDTO) {
+
+    public Professor(String nome, String sobreNome) {
         this.nome = nome;
         this.sobreNome = sobreNome;
-        this.turma = TurmaDTO.toTurma(turmaDTO);
     }
 }

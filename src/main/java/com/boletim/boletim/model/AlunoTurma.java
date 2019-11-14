@@ -23,13 +23,11 @@ public class AlunoTurma {
     private Long id;
 
     @ManyToOne
-    @Fetch(FetchMode.SELECT)
     @JoinColumn(name = "aluno_id")
     private Aluno aluno;
 
     @ManyToOne()
-    @Fetch(FetchMode.SELECT)
-    @JoinColumn(name = "turma_id", referencedColumnName = "id")
+    @JoinColumn(name = "turma_id")
     private Turma turma;
 
     public AlunoTurma(Aluno aluno, Turma turma) {

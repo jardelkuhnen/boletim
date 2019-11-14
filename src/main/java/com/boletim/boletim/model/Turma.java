@@ -8,6 +8,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,7 +27,7 @@ public class Turma {
     private String nome;
 
     @OneToMany(mappedBy = "aluno", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<AlunoTurma> alunosTurma;
+    private List<AlunoTurma> alunosTurma = new ArrayList<>();
 
     @OneToOne(mappedBy = "turma", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Professor professor;
@@ -35,5 +36,9 @@ public class Turma {
         this.nome = nome;
         this.alunosTurma = alunosTurma;
         this.professor = professor;
+    }
+
+    public Turma(String nome) {
+        this.nome = nome;
     }
 }

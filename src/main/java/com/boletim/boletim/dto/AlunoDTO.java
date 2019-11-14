@@ -28,7 +28,6 @@ public class AlunoDTO {
     @NotEmpty(message = "Nome não deve ser vazio!")
     private String nome;
     private String sobreNome;
-    @NotNull
     private TurmaDTO turma;
 
     public static Aluno toAluno(AlunoDTO alunoDTO) {

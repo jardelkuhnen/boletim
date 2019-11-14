@@ -22,17 +22,11 @@ public class TurmaDTO {
     @NotEmpty(message = "Nome Não pode ser vazio!")
     private String nome;
     private List<AlunoDTO> alunos = new ArrayList<>();
-    private ProfessorDTO professor;
-
 
     public static Turma toTurma(TurmaDTO turmaDTO) {
         Turma turma = new Turma();
         turma.setId(turmaDTO.getId());
         turma.setNome(turmaDTO.getNome());
-
-        if (turmaDTO.getProfessor() != null) {
-            turma.setProfessor(ProfessorDTO.toProfessor(turmaDTO.getProfessor()));
-        }
 
         return turma;
     }
@@ -41,7 +35,6 @@ public class TurmaDTO {
         return TurmaDTO.builder()
                 .id(turma.getId())
                 .nome(turma.getNome())
-                .alunos(AlunoDTO.toAlunosDTOList(turma.getAlunosTurma()))
-                .professor(ProfessorDTO.toProfessorDTO(turma.getProfessor())).build();
+                .alunos(AlunoDTO.toAlunosDTOList(turma.getAlunosTurma())).build();
     }
 }

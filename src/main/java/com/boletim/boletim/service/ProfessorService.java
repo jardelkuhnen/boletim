@@ -7,6 +7,7 @@ import com.boletim.boletim.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,10 +31,44 @@ public class ProfessorService {
     }
 
     public ProfessorDTO save(ProfessorDTO professorDTO) {
-        Professor professor = new Professor(professorDTO.getNome(), professorDTO.getSobreNome(), professorDTO.getTurma());
+        Professor professor = new Professor(professorDTO.getNome(), professorDTO.getSobreNome());
 
-        this.professorRepository.save(professor);
+        professorDTO = ProfessorDTO.toProfessorDTO(this.professorRepository.save(professor));
 
         return professorDTO;
     }
+
+    public List<ProfessorDTO> findAll() {
+        List<Professor> professores = this.professorRepository.findAll();
+
+        return ProfessorDTO.of(professores);
+    }
+
+    public void delete(Long professorId) throws NotFoundException {
+        Optional<Professor> professorOptional = this.professorRepository.findById(professorId);
+
+        if (!professorOptional.isPresent()) {
+           throw new NotFoundException("Professor nao encontrado!");
+        }
+
+        this.professorRepository.delete(professorOptional.get());
+
+    }
+
+    public ProfessorDTO update(ProfessorDTO professorDTO) throws NotFoundException {
+        Optional<Professor> professorOptional = this.professorRepository.findById(professorDTO.getId());
+
+        if (!professorOptional.isPresent()) {
+            throw new NotFoundException("Professor nao encontrado!");
+        }
+
+        Professor professor = professorOptional.get();
+        professor.setNome(professorDTO.getNome());
+        professor.setSobreNome(professorDTO.getSobreNome());
+
+        return ProfessorDTO.toProfessorDTO(this.professorRepository.save(professor));
+
+    }
+
+
 }
