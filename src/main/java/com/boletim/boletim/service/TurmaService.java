@@ -1,6 +1,8 @@
 package com.boletim.boletim.service;
 
 import com.boletim.boletim.dto.AlunoDTO;
+import com.boletim.boletim.dto.AlunoTurmaDTO;
+import com.boletim.boletim.dto.ProfessorDTO;
 import com.boletim.boletim.dto.TurmaDTO;
 import com.boletim.boletim.exception.NotFoundException;
 import com.boletim.boletim.model.AlunoTurma;
@@ -9,6 +11,8 @@ import com.boletim.boletim.model.Turma;
 import com.boletim.boletim.repository.AlunoTurmaRepository;
 import com.boletim.boletim.repository.TurmaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,50 +34,57 @@ public class TurmaService {
         this.alunoTurmaRepository = alunoTurmaRepository;
     }
 
-    public Turma findById(Long id) throws NotFoundException {
+    public TurmaDTO findById(Long id) throws NotFoundException {
         Optional<Turma> turmaOptional = this.turmaRepository.findById(id);
 
         if (!turmaOptional.isPresent()) {
            throw new NotFoundException("Turma não encontrada!");
         }
 
-        return turmaOptional.get();
+        Turma turma = turmaOptional.get();
+        List<AlunoTurma> alunos = this.alunoTurmaRepository.findByTurmaId(turma.getId());
+        turma.setAlunosTurma(alunos);
+
+        return TurmaDTO.of(turmaOptional.get());
     }
 
     @Transactional
     public TurmaDTO save(TurmaDTO turmaDTO) throws NotFoundException {
-
-//        Professor professor = this.professorService.findById(turmaDTO.getId());
-//        List<AlunoTurma> alunosTurma = createAlunosTurma(turmaDTO.getAlunos());
-
+        Professor professor = null;
         Turma turma = new Turma(turmaDTO.getNome());
 
-        this.turmaRepository.save(turma);
-//        this.alunoTurmaRepository.saveAll(alunosTurma);
+        if (turmaDTO.getProfessorDTO() != null && turmaDTO.getProfessorDTO().getId() != null) {
+            professor = this.professorService.findById(turmaDTO.getProfessorDTO().getId());
+            turma.setProfessor(professor);
+        }
 
-        return turmaDTO;
+        turma = this.turmaRepository.save(turma);
+        professor.setTurma(turma);
+        this.professorService.save(ProfessorDTO.of(professor));
+
+        if(!turmaDTO.getAlunos().isEmpty()) {
+            List<AlunoTurma> alunosTurma = createAlunosTurma(turmaDTO.getAlunos(), turma);
+            alunosTurma = this.alunoTurmaRepository.saveAll(alunosTurma);
+            turma.setAlunosTurma(alunosTurma);
+        }
+
+        turma = this.turmaRepository.save(turma);
+        return TurmaDTO.of(turma);
     }
 
-
-
-
-    private List<AlunoTurma> createAlunosTurma(List<AlunoDTO> alunos) {
+    private List<AlunoTurma> createAlunosTurma(List<AlunoDTO> alunos, Turma turma) {
         List<AlunoTurma> alunosTurma = new ArrayList<>();
+
         for (AlunoDTO alunoDTO: alunos) {
-            alunosTurma.add(new AlunoTurma(AlunoDTO.toAluno(alunoDTO), TurmaDTO.toTurma(alunoDTO.getTurma())));
+            alunosTurma.add(AlunoTurmaDTO.of(alunoDTO, turma));
         }
+
         return  alunosTurma;
     }
 
-    public List<TurmaDTO> findAll() {
-        List<Turma> turmas = this.turmaRepository.findAll();
-        List<TurmaDTO> turmaDTOS = new ArrayList<>();
-
-        for (Turma turma: turmas) {
-            turmaDTOS.add(TurmaDTO.toTurmaDTO(turma));
-        }
-
-        return turmaDTOS;
+    public Page<TurmaDTO> findAll(Pageable pageable) {
+        Page<TurmaDTO> turmas = this.turmaRepository.findAll(pageable).map(TurmaDTO::of);
+        return turmas;
     }
 
     public void delete(Long turmaId) throws NotFoundException {
@@ -96,6 +107,6 @@ public class TurmaService {
 
         Turma turma = turmaOptional.get();
         turma.setNome(turmaDTO.getNome());
-        return TurmaDTO.toTurmaDTO(this.turmaRepository.save(turma));
+        return TurmaDTO.of(this.turmaRepository.save(turma));
     }
 }

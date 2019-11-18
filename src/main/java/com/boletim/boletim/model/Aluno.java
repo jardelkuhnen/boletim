@@ -39,10 +39,9 @@ public class Aluno {
     @OneToMany(mappedBy = "aluno", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<AlunoTurma> alunosTurma;
 
-    public Aluno(String ra, String nome, String sobreNome, Turma turma) {
+    public Aluno(String ra, String nome, String sobreNome) {
         this.ra = ra;
         this.nome = nome;
         this.sobreNome = sobreNome;
-        this.turma = turma;
     }
 }

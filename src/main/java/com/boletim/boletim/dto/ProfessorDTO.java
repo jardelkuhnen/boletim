@@ -1,16 +1,13 @@
 package com.boletim.boletim.dto;
 
 import com.boletim.boletim.model.Professor;
-import com.boletim.boletim.model.Turma;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +23,7 @@ public class ProfessorDTO {
     private String nome;
     private String sobreNome;
 
-    public static Professor toProfessor(ProfessorDTO professorDTO) {
+    public static Professor of(ProfessorDTO professorDTO) {
         Professor professor = new Professor();
         professor.setId(professorDTO.getId());
         professor.setNome(professorDTO.getNome());
@@ -35,14 +32,14 @@ public class ProfessorDTO {
         return professor;
     }
 
-    public static ProfessorDTO toProfessorDTO(Professor professor) {
+    public static ProfessorDTO of(Professor professor) {
         return ProfessorDTO.builder().id(professor.getId()).nome(professor.getNome()).sobreNome(professor.getSobreNome()).build();
     }
 
     public static List<ProfessorDTO> of(List<Professor> professores) {
         List<ProfessorDTO> professorDTOS = new ArrayList<>();
         for (Professor professor: professores) {
-            professorDTOS.add(ProfessorDTO.toProfessorDTO(professor));
+            professorDTOS.add(ProfessorDTO.of(professor));
         }
 
         return professorDTOS;

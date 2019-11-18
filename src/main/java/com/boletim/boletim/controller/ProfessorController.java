@@ -5,6 +5,7 @@ import com.boletim.boletim.dto.ProfessorDTO;
 import com.boletim.boletim.exception.NotFoundException;
 import com.boletim.boletim.service.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +30,8 @@ public class ProfessorController {
     }
 
     @GetMapping
-    public ResponseEntity getAll() {
-        return ResponseEntity.ok(this.professorService.findAll());
+    public ResponseEntity getAll(Pageable pageable) {
+        return ResponseEntity.ok(this.professorService.findAll(pageable));
     }
 
     @GetMapping("/{professorId}")

@@ -5,9 +5,10 @@ import com.boletim.boletim.exception.NotFoundException;
 import com.boletim.boletim.model.Professor;
 import com.boletim.boletim.repository.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,15 +34,14 @@ public class ProfessorService {
     public ProfessorDTO save(ProfessorDTO professorDTO) {
         Professor professor = new Professor(professorDTO.getNome(), professorDTO.getSobreNome());
 
-        professorDTO = ProfessorDTO.toProfessorDTO(this.professorRepository.save(professor));
+        professorDTO = ProfessorDTO.of(this.professorRepository.save(professor));
 
         return professorDTO;
     }
 
-    public List<ProfessorDTO> findAll() {
-        List<Professor> professores = this.professorRepository.findAll();
-
-        return ProfessorDTO.of(professores);
+    public Page<ProfessorDTO> findAll(Pageable pageable) {
+        Page<ProfessorDTO> professores = this.professorRepository.findAll(pageable).map(ProfessorDTO::of);
+        return professores;
     }
 
     public void delete(Long professorId) throws NotFoundException {
@@ -66,7 +66,7 @@ public class ProfessorService {
         professor.setNome(professorDTO.getNome());
         professor.setSobreNome(professorDTO.getSobreNome());
 
-        return ProfessorDTO.toProfessorDTO(this.professorRepository.save(professor));
+        return ProfessorDTO.of(this.professorRepository.save(professor));
 
     }
 

@@ -26,7 +26,7 @@ public class Turma {
     @Column(name = "nome")
     private String nome;
 
-    @OneToMany(mappedBy = "aluno", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "aluno", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<AlunoTurma> alunosTurma = new ArrayList<>();
 
     @OneToOne(mappedBy = "turma", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

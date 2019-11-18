@@ -6,6 +6,7 @@ import com.boletim.boletim.dto.TurmaDTO;
 import com.boletim.boletim.exception.NotFoundException;
 import com.boletim.boletim.service.TurmaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +31,8 @@ public class TurmaController {
     }
 
     @GetMapping
-    public ResponseEntity getAll() {
-        return ResponseEntity.ok(this.turmaService.findAll());
+    public ResponseEntity getAll(Pageable pageable) {
+        return ResponseEntity.ok(this.turmaService.findAll(pageable));
     }
 
     @GetMapping("/{turmaId}")

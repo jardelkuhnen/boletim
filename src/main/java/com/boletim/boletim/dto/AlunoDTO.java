@@ -8,12 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -30,12 +27,16 @@ public class AlunoDTO {
     private String sobreNome;
     private TurmaDTO turma;
 
-    public static Aluno toAluno(AlunoDTO alunoDTO) {
+    public static Aluno of(AlunoDTO alunoDTO) {
         Aluno aluno = new Aluno();
+        aluno.setId(alunoDTO.getId());
         aluno.setNome(alunoDTO.getNome());
         aluno.setRa(alunoDTO.getRa());
         aluno.setSobreNome(alunoDTO.getSobreNome());
-        aluno.setTurma(TurmaDTO.toTurma(alunoDTO.getTurma()));
+
+        if(alunoDTO.getTurma() != null && alunoDTO.getTurma().getId() != null) {
+            aluno.setTurma(TurmaDTO.of(alunoDTO.getTurma()));
+        }
 
         return aluno;
     }
@@ -43,15 +44,16 @@ public class AlunoDTO {
     public static AlunoDTO toAlunoDTO(Aluno aluno) {
         return AlunoDTO.builder()
                 .id(aluno.getId())
+                .ra(aluno.getRa())
                 .nome(aluno.getNome())
                 .sobreNome(aluno.getSobreNome())
-                .turma(TurmaDTO.toTurmaDTO(aluno.getTurma())).build();
+                .turma(TurmaDTO.of(aluno.getTurma())).build();
     }
 
     public static List<AlunoDTO> toAlunosDTOList(List<AlunoTurma> alunosTurma) {
         List<AlunoDTO> alunoDTOS = new ArrayList<>();
 
-        for (AlunoTurma alunoTurma: alunosTurma) {
+        for (AlunoTurma alunoTurma : alunosTurma) {
             alunoDTOS.add(AlunoDTO.toAlunoDTO(alunoTurma.getAluno()));
         }
 
@@ -62,11 +64,10 @@ public class AlunoDTO {
     public static List<AlunoDTO> toAlunosDTOListFromALunos(List<Aluno> alunos) {
         List<AlunoDTO> alunoDTOS = new ArrayList<>();
 
-        for (Aluno aluno: alunos) {
+        for (Aluno aluno : alunos) {
             alunoDTOS.add(AlunoDTO.toAlunoDTO(aluno));
         }
 
         return alunoDTOS;
     }
-
 }

@@ -5,6 +5,7 @@ import com.boletim.boletim.exception.NotFoundException;
 import com.boletim.boletim.service.AlunoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +31,8 @@ public class AlunoController {
     }
 
     @GetMapping
-    public ResponseEntity listAll() {
-        return ResponseEntity.ok(this.alunoService.listAll());
+    public ResponseEntity listAll(Pageable pageable) {
+        return ResponseEntity.ok(this.alunoService.listAll(pageable));
     }
 
     @DeleteMapping
@@ -47,6 +48,11 @@ public class AlunoController {
 
         return ResponseEntity.ok(alunoDTO);
 
+    }
+
+    @GetMapping("/{alunoId}")
+    public ResponseEntity getById(@PathVariable Long alunoId) throws NotFoundException {
+        return ResponseEntity.ok(this.alunoService.findById(alunoId));
     }
 
 }

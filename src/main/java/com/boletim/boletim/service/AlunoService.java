@@ -4,12 +4,12 @@ import com.boletim.boletim.dto.AlunoDTO;
 import com.boletim.boletim.dto.TurmaDTO;
 import com.boletim.boletim.exception.NotFoundException;
 import com.boletim.boletim.model.Aluno;
-import com.boletim.boletim.model.Turma;
 import com.boletim.boletim.repository.AlunoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,18 +25,23 @@ public class AlunoService {
     }
 
     public AlunoDTO save(AlunoDTO alunoDTO) throws NotFoundException {
-        Turma turma = this.turmaService.findById(alunoDTO.getTurma().getId());
-        Aluno aluno = new Aluno(alunoDTO.getRa(), alunoDTO.getNome(), alunoDTO.getSobreNome(), turma);
 
-        return AlunoDTO.toAlunoDTO(this.alunoRepository.save(aluno));
+        Aluno aluno = new Aluno(alunoDTO.getRa(), alunoDTO.getNome(), alunoDTO.getSobreNome());
+
+        if (alunoDTO.getTurma() != null && alunoDTO.getTurma().getId() != null) {
+           TurmaDTO turmaDTO = this.turmaService.findById(alunoDTO.getTurma().getId());
+            aluno.setTurma(TurmaDTO.of(turmaDTO));
+        }
+
+        aluno = this.alunoRepository.save(aluno);
+
+        return AlunoDTO.toAlunoDTO(aluno);
     }
 
-    public List<AlunoDTO> listAll() {
-        List<Aluno> alunos = this.alunoRepository.findAll();
+    public Page<AlunoDTO> listAll(Pageable pageable) {
+        Page<AlunoDTO> alunos = this.alunoRepository.findAll(pageable).map(AlunoDTO::toAlunoDTO);
 
-        List<AlunoDTO> alunoDTOS = AlunoDTO.toAlunosDTOListFromALunos(alunos);
-
-        return alunoDTOS;
+        return alunos;
     }
 
     public void delete(Long alunoId) throws NotFoundException {
@@ -59,12 +64,25 @@ public class AlunoService {
         Aluno aluno = alunoOptional.get();
         aluno.setRa(alunoDTO.getRa());
         aluno.setNome(alunoDTO.getNome());
-        aluno.setSobreNome(aluno.getSobreNome());
-        aluno.setTurma(TurmaDTO.toTurma(alunoDTO.getTurma()));
+        aluno.setSobreNome(alunoDTO.getSobreNome());
+
+        if(alunoDTO.getTurma() != null) {
+            aluno.setTurma(TurmaDTO.of(alunoDTO.getTurma()));
+        }
+
 
         this.alunoRepository.save(aluno);
 
         return AlunoDTO.toAlunoDTO(aluno);
 
+    }
+
+    public AlunoDTO findById(Long alunoId) throws NotFoundException {
+        Optional<Aluno> alunoOptional = this.alunoRepository.findById(alunoId);
+
+        if(!alunoOptional.isPresent()) {
+            throw new NotFoundException("Aluno não encontrado!");
+        }
+        return AlunoDTO.toAlunoDTO(alunoOptional.get());
     }
 }
