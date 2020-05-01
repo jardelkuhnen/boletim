@@ -13,7 +13,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/professor")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProfessorController {
 
     private final ProfessorService professorService;
